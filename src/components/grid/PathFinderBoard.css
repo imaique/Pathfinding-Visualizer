@@ -1,15 +1,13 @@
-.row {
-  display: flex;
+table,
+.node {
+  border-collapse: collapse;
+  border: 1px solid black;
 }
 
 .node {
   height: 1em;
   width: 1em;
-  border-color: black;
-  border-radius: 1px;
-  border-style: solid;
-  margin: 1px;
 }
 .node.unvisited {
-  background-color: #555;
+  background-color: white;
 }
