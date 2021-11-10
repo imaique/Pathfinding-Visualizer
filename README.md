@@ -5,4 +5,4 @@ This project was heavily inspired by [Clement Mihailescu's Pathfinding Visualize
 
 ## Available Algorithms
 
-\*\*Breadth-First Search (BFS)
+**Breadth-First Search (BFS)**
