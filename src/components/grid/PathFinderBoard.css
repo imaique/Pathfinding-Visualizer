@@ -11,3 +11,11 @@ table,
 .node.unvisited {
   background-color: white;
 }
+
+.node.start {
+  background-color: #95dac1;
+}
+
+.node.end {
+  background-color: #dc7f9b;
+}
