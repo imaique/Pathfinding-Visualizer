@@ -20,15 +20,17 @@ const PathFinderBoard = () => {
     grid[i] = row;
   }
   return (
-    <div className="board">
-      {grid.map((row) => (
-        <div className="row">
-          {row.map((node) => (
-            <div className="node unvisited" id={`${node.y}_${node.x}`}></div>
-          ))}
-        </div>
-      ))}
-    </div>
+    <table className="board">
+      <tbody>
+        {grid.map((row) => (
+          <tr className="row">
+            {row.map((node) => (
+              <td className="node unvisited" id={`${node.y}_${node.x}`}></td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 
