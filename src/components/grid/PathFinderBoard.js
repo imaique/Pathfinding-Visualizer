@@ -1,10 +1,11 @@
 import './PathFinderBoard.css';
 
 const NodeStates = {
-  start: 0,
-  end: 1,
-  visited: 2,
-  unvisited: 3,
+  start: 'start',
+  end: 'end',
+  visited: 'visited',
+  unvisited: 'unvisited',
+  wall: 'wall',
 };
 
 class Node {
@@ -13,13 +14,18 @@ class Node {
     this.x = x;
     this.y = y;
     this.nodeState = NodeStates.unvisited;
+    this.setState = this.setState.bind(this);
+    this.click = this.click.bind(this);
+  }
+  click() {
+    if (this.nodeState === NodeStates.unvisited) {
+      this.setState(NodeStates.wall);
+    }
   }
   setState(state) {
     const NodeDOM = document.getElementById(`${this.y}_${this.x}`);
-    switch (state) {
-      case NodeStates.start:
-        NodeDOM.className = 'node start';
-    }
+    NodeDOM.className = 'node ' + NodeStates[state];
+    this.nodeState = state;
   }
 }
 
@@ -53,6 +59,7 @@ const PathFinderBoard = () => {
                     : 'unvisited')
                 }
                 id={`${node.y}_${node.x}`}
+                onMouseDown={node.click}
               ></td>
             ))}
           </tr>
