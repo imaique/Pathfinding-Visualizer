@@ -4,7 +4,7 @@ table,
   border: 1px solid black;
 }
 .node:hover {
-  opacity: 50%;
+  opacity: 75%;
 }
 .node {
   height: 1.5em;
@@ -15,9 +15,12 @@ table,
 }
 
 .node.start {
-  background-color: #95dac1;
+  background-color: green;
 }
 
 .node.end {
-  background-color: #dc7f9b;
+  background-color: red;
+}
+.node.wall {
+  background-color: darkblue;
 }
