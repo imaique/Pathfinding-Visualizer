@@ -1,5 +1,5 @@
 import './PathFinderBoard.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { bfs } from '../../algorithms/bfs';
 import { NodeStates } from './NodeStates';
 import { BoardNode } from './BoardNode';
@@ -22,9 +22,24 @@ const PathFinderBoard = (props) => {
   }
   grid[~~(height / 2)][~~(width / 4)].nodeState = NodeStates.start;
   grid[~~(height / 2)][width - ~~(width / 4)].nodeState = NodeStates.end;
+  BoardNode.startNode = grid[~~(height / 2)][~~(width / 4)];
+  BoardNode.endNode = grid[~~(height / 2)][width - ~~(width / 4)];
   const [currentGrid, setGrid] = useState(grid);
 
-  const visualize = () => {};
+  const visualize = async function () {
+    const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
+    const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
+    const [visitedOrder, shortestPath] = bfs(start, end, currentGrid, false);
+    console.log(visitedOrder);
+    let index = 0;
+    const interval = setInterval(() => {
+      let x = visitedOrder[index].x;
+      let y = visitedOrder[index].y;
+      index++;
+      currentGrid[y][x].setState(NodeStates.visited);
+      if (index === visitedOrder.length) clearInterval(interval);
+    }, 1);
+  };
 
   useEffect(() => {
     for (let i = 0; i < height; i++) {
