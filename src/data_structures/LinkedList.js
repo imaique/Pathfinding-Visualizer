@@ -10,8 +10,11 @@ class LinkedList {
   }
   removeFirst() {
     if (this.tail !== this.head) {
+      const removed = this.head.next;
       this.head.next = this.head.next.next;
+      return removed;
     }
+    return null;
   }
   isEmpty() {
     return this.tail === this.head;
@@ -23,3 +26,5 @@ class Node {
     this.next = null;
   }
 }
+
+export default LinkedList;
