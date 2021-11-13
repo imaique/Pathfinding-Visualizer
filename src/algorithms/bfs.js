@@ -1,16 +1,5 @@
 import Queue from '../data_structures/Queue';
-import { NodeStates } from '../components/grid/NodeStates';
-
-const isValid = (x, y, grid, visited) => {
-  return (
-    x >= 0 &&
-    x < grid[0].length &&
-    y >= 0 &&
-    y < grid.length &&
-    !visited.has(`${y}_${x}`) &&
-    grid[y][x].nodeState !== NodeStates.wall
-  );
-};
+import { getPath, isValid } from './shared';
 
 export const bfs = (start, end, grid, isDiagonalNeighbors) => {
   let neighbors = [];
@@ -25,12 +14,14 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
       neighbors.push({ x: j, y: i });
     }
   }
+
   const queue = new Queue();
-  queue.enqueue(start);
   const visitedOrder = [];
   const visited = new Set();
+
+  queue.enqueue(start);
   visited.add(`${start.y}_${start.x}`);
-  console.log('calls?');
+
   while (!queue.isEmpty()) {
     const current = queue.dequeue();
 
@@ -41,9 +32,10 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
       };
       if (isValid(neighbor.x, neighbor.y, grid, visited)) {
         if (neighbor.x === end.x && neighbor.y === end.y) {
-          console.log('yo!!!!');
-          return [visitedOrder, []];
+          let path = getPath(current);
+          return [visitedOrder, path];
         }
+        neighbor.prev = current;
         queue.enqueue(neighbor);
         visitedOrder.push(neighbor);
         visited.add(`${neighbor.y}_${neighbor.x}`);

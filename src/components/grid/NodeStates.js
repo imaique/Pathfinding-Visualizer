@@ -4,4 +4,5 @@ export const NodeStates = {
   visited: 'visited',
   unvisited: 'unvisited',
   wall: 'wall',
+  path: 'path',
 };

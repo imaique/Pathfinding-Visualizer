@@ -27,7 +27,7 @@ const PathFinderBoard = (props) => {
     setIsVisualized(true);
     const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
     const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
-    const [visitedOrder, shortestPath] = bfs(start, end, currentGrid, false);
+    const [visitedOrder, takenPath] = bfs(start, end, currentGrid, false);
 
     let index = 0;
     const interval = setInterval(() => {
@@ -35,8 +35,24 @@ const PathFinderBoard = (props) => {
       let y = visitedOrder[index].y;
       index++;
       currentGrid[y][x].setState(NodeStates.visited);
-      if (index === visitedOrder.length) clearInterval(interval);
+      if (index === visitedOrder.length) {
+        clearInterval(interval);
+        visualizePath(takenPath);
+      }
     }, 0.5);
+  };
+
+  const visualizePath = async function (takenPath) {
+    let index = 0;
+    const interval = setInterval(() => {
+      let x = takenPath[index].x;
+      let y = takenPath[index].y;
+      index++;
+      currentGrid[y][x].setState(NodeStates.path);
+      if (index === takenPath.length) {
+        clearInterval(interval);
+      }
+    }, 20);
   };
 
   useEffect(() => {

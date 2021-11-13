@@ -16,6 +16,9 @@ table.disable {
 .node.unvisited {
   background-color: white;
 }
+.node.path {
+  background-color: yellow;
+}
 
 .node.start {
   background-color: green;
