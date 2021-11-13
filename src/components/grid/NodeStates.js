@@ -1,0 +1,7 @@
+export const NodeStates = {
+  start: 'start',
+  end: 'end',
+  visited: 'visited',
+  unvisited: 'unvisited',
+  wall: 'wall',
+};
