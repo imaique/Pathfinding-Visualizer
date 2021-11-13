@@ -1,6 +1,8 @@
 import { NodeStates } from './NodeStates';
 
 export class BoardNode {
+  static startNode = null;
+  static endNode = null;
   static draggedState = null;
   static revertPreviousNode = null;
   static walls = new Set();
@@ -34,6 +36,10 @@ export class BoardNode {
       BoardNode.walls.add(this.getKey());
     } else if (BoardNode.draggedState === NodeStates.unvisited) {
       BoardNode.walls.delete(this.getKey());
+    } else if (BoardNode.draggedState === NodeStates.start) {
+      BoardNode.startNode = this;
+    } else if (BoardNode.draggedState === NodeStates.end) {
+      BoardNode.endNode = this;
     }
   }
   getKey() {
