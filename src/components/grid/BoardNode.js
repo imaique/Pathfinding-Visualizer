@@ -19,11 +19,16 @@ export class BoardNode {
     if (
       BoardNode.draggedState === null ||
       this.nodeState === NodeStates.start ||
-      this.nodeState === NodeStates.end ||
-      this.nodeState === NodeStates.visited
+      this.nodeState === NodeStates.end
     )
       return;
-    //if (this.nodeState === NodeStates.unvisited)
+
+    if (
+      BoardNode.draggedState === NodeStates.unvisited &&
+      (this.nodeState === NodeStates.path ||
+        this.nodeState === NodeStates.visited)
+    )
+      return;
 
     if (
       BoardNode.draggedState !== NodeStates.wall &&
@@ -56,7 +61,12 @@ export class BoardNode {
     event.preventDefault();
     if (which === 0) {
       BoardNode.draggedState = this.nodeState;
-      if (this.nodeState === NodeStates.unvisited) {
+      if (
+        this.nodeState === NodeStates.path ||
+        this.nodeState === NodeStates.visited
+      ) {
+        BoardNode.draggedState = NodeStates.wall;
+      } else if (this.nodeState === NodeStates.unvisited) {
         BoardNode.draggedState = NodeStates.wall;
         this.setState(NodeStates.wall);
         BoardNode.walls.add(this.getKey());
