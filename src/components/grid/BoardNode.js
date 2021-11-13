@@ -19,7 +19,8 @@ export class BoardNode {
     if (
       BoardNode.draggedState === null ||
       this.nodeState === NodeStates.start ||
-      this.nodeState === NodeStates.end
+      this.nodeState === NodeStates.end ||
+      this.nodeState === NodeStates.visited
     )
       return;
     //if (this.nodeState === NodeStates.unvisited)
