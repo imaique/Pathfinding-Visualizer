@@ -12,6 +12,7 @@ class LinkedList {
     if (this.tail !== this.head) {
       const removed = this.head.next;
       this.head.next = this.head.next.next;
+      if (this.head.next === null) this.tail = this.head;
       return removed;
     }
     return null;
