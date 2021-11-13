@@ -13,28 +13,28 @@ const PathFinderBoard = (props) => {
   const height = 30;
 
   const grid = createBoardNodeGrid(width, height);
-  const middleRow = ~~(height / 2);
-  const startCol = ~~(width / 4);
-  const endCol = width - ~~(width / 4);
-  grid[middleRow][startCol].nodeState = NodeStates.start;
-  grid[middleRow][endCol].nodeState = NodeStates.end;
-  BoardNode.startNode = grid[middleRow][startCol];
-  BoardNode.endNode = grid[middleRow][endCol];
+
   const [currentGrid, setGrid] = useState(grid);
   const [isVisualized, setIsVisualized] = useState(false);
+  const [visitedNodes, setVisitedNodes] = useState([]);
 
   const visualize = async function () {
+    if (isVisualized) cleanUpVisitedNodes(visitedNodes);
     setIsVisualized(true);
     const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
     const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
     const [visitedOrder, takenPath] = bfs(start, end, currentGrid, false);
+    setVisitedNodes(visitedOrder);
+    if (visitedOrder.length === 0) return;
 
     let index = 0;
     const interval = setInterval(() => {
-      let x = visitedOrder[index].x;
-      let y = visitedOrder[index].y;
+      const x = visitedOrder[index].x;
+      const y = visitedOrder[index].y;
       index++;
-      currentGrid[y][x].setState(NodeStates.visited);
+      const nodeState = currentGrid[y][x].nodeState;
+      if (nodeState !== NodeStates.end && nodeState !== NodeStates.start)
+        currentGrid[y][x].setState(NodeStates.visited);
       if (index === visitedOrder.length) {
         clearInterval(interval);
         visualizePath(takenPath);
@@ -42,15 +42,29 @@ const PathFinderBoard = (props) => {
     }, 0.5);
   };
 
+  const cleanUpVisitedNodes = (visitedNodes) => {
+    for (let node of visitedNodes) {
+      const x = node.x;
+      const y = node.y;
+      const nodeState = currentGrid[y][x].nodeState;
+      if (nodeState === NodeStates.path || nodeState === NodeStates.visited)
+        currentGrid[node.y][node.x].setState(NodeStates.unvisited);
+    }
+  };
+
   const visualizePath = async function (takenPath) {
+    if (takenPath.length === 0) return;
     let index = 0;
-    const interval = setInterval(() => {
-      let x = takenPath[index].x;
-      let y = takenPath[index].y;
+    console.log(takenPath);
+    const pathInterval = setInterval(() => {
+      const x = takenPath[index].x;
+      const y = takenPath[index].y;
       index++;
-      currentGrid[y][x].setState(NodeStates.path);
+      const nodeState = currentGrid[y][x].nodeState;
+      if (nodeState !== NodeStates.end && nodeState !== NodeStates.start)
+        currentGrid[y][x].setState(NodeStates.path);
       if (index === takenPath.length) {
-        clearInterval(interval);
+        clearInterval(pathInterval);
       }
     }, 20);
   };
@@ -100,6 +114,14 @@ const createBoardNodeGrid = (width, height) => {
     }
     grid[i] = row;
   }
+  const middleRow = ~~(height / 2);
+  const startCol = ~~(width / 4);
+  const endCol = width - ~~(width / 4);
+  grid[middleRow][startCol].nodeState = NodeStates.start;
+  grid[middleRow][endCol].nodeState = NodeStates.end;
+  BoardNode.startNode = grid[middleRow][startCol];
+  BoardNode.endNode = grid[middleRow][endCol];
+
   return grid;
 };
 
