@@ -13,9 +13,7 @@ const isValid = (x, y, grid, visited) => {
 };
 
 export const bfs = (start, end, grid, isDiagonalNeighbors) => {
-  let neighbors = new Array();
-  const height = grid.length;
-  const width = grid[0].length;
+  let neighbors = [];
   for (let i = -1; i <= 1; i++) {
     for (let j = -1; j <= 1; j++) {
       // if diagonal neighbors are not allowed and the current is diagonal, skip
@@ -29,7 +27,7 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
   }
   const queue = new Queue();
   queue.enqueue(start);
-  const visitedOrder = new Array();
+  const visitedOrder = [];
   const visited = new Set();
   visited.add(`${start.x}_${start.y}`);
   console.log('calls?');
@@ -44,7 +42,7 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
       if (isValid(neighbor.x, neighbor.y, grid, visited)) {
         if (neighbor.x === end.x && neighbor.y === end.y) {
           console.log('yo!!!!');
-          return [visitedOrder, new Array()];
+          return [visitedOrder, []];
         }
         queue.enqueue(neighbor);
         visitedOrder.push(neighbor);
@@ -52,5 +50,5 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
       }
     }
   }
-  return [visitedOrder, new Array()];
+  return [visitedOrder, []];
 };
