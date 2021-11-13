@@ -7,7 +7,7 @@ const isValid = (x, y, grid, visited) => {
     x < grid[0].length &&
     y >= 0 &&
     y < grid.length &&
-    !visited.has(`${x}_${y}`) &&
+    !visited.has(`${y}_${x}`) &&
     grid[y][x].nodeState !== NodeStates.wall
   );
 };
@@ -29,7 +29,7 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
   queue.enqueue(start);
   const visitedOrder = [];
   const visited = new Set();
-  visited.add(`${start.x}_${start.y}`);
+  visited.add(`${start.y}_${start.x}`);
   console.log('calls?');
   while (!queue.isEmpty()) {
     const current = queue.dequeue();
@@ -46,7 +46,7 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
         }
         queue.enqueue(neighbor);
         visitedOrder.push(neighbor);
-        visited.add(`${neighbor.x}_${neighbor.y}`);
+        visited.add(`${neighbor.y}_${neighbor.x}`);
       }
     }
   }
