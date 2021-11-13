@@ -20,7 +20,9 @@ table.disable {
 .node.start {
   background-color: green;
 }
-
+.node.visited {
+  background-color: aqua;
+}
 .node.end {
   background-color: red;
 }
