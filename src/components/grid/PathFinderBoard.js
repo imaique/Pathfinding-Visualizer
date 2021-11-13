@@ -12,25 +12,23 @@ const PathFinderBoard = (props) => {
   const width = 60;
   const height = 30;
 
-  let grid = new Array(height);
-  for (let i = 0; i < height; i++) {
-    let row = new Array(width);
-    for (let j = 0; j < width; j++) {
-      row[j] = new BoardNode(j, i);
-    }
-    grid[i] = row;
-  }
-  grid[~~(height / 2)][~~(width / 4)].nodeState = NodeStates.start;
-  grid[~~(height / 2)][width - ~~(width / 4)].nodeState = NodeStates.end;
-  BoardNode.startNode = grid[~~(height / 2)][~~(width / 4)];
-  BoardNode.endNode = grid[~~(height / 2)][width - ~~(width / 4)];
+  const grid = createBoardNodeGrid(width, height);
+  const middleRow = ~~(height / 2);
+  const startCol = ~~(width / 4);
+  const endCol = width - ~~(width / 4);
+  grid[middleRow][startCol].nodeState = NodeStates.start;
+  grid[middleRow][endCol].nodeState = NodeStates.end;
+  BoardNode.startNode = grid[middleRow][startCol];
+  BoardNode.endNode = grid[middleRow][endCol];
   const [currentGrid, setGrid] = useState(grid);
+  const [isVisualized, setIsVisualized] = useState(false);
 
   const visualize = async function () {
+    setIsVisualized(true);
     const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
     const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
     const [visitedOrder, shortestPath] = bfs(start, end, currentGrid, false);
-    console.log(visitedOrder);
+
     let index = 0;
     const interval = setInterval(() => {
       let x = visitedOrder[index].x;
@@ -38,7 +36,7 @@ const PathFinderBoard = (props) => {
       index++;
       currentGrid[y][x].setState(NodeStates.visited);
       if (index === visitedOrder.length) clearInterval(interval);
-    }, 1);
+    }, 0.5);
   };
 
   useEffect(() => {
@@ -75,6 +73,18 @@ const PathFinderBoard = (props) => {
       </table>
     </React.Fragment>
   );
+};
+
+const createBoardNodeGrid = (width, height) => {
+  let grid = new Array(height);
+  for (let i = 0; i < height; i++) {
+    let row = new Array(width);
+    for (let j = 0; j < width; j++) {
+      row[j] = new BoardNode(j, i);
+    }
+    grid[i] = row;
+  }
+  return grid;
 };
 
 export default PathFinderBoard;
