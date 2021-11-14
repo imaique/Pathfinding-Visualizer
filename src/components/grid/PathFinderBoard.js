@@ -1,12 +1,11 @@
 import './PathFinderBoard.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { bfs } from '../../algorithms/bfs';
 import { NodeStates } from './NodeStates';
 import { BoardNode } from './BoardNode';
 
 const PathFinderBoard = () => {
   const createBoardNodeGrid = (width, height) => {
-    console.log('createnewone');
     let grid = new Array(height);
     for (let i = 0; i < height; i++) {
       let row = new Array(width);
@@ -34,22 +33,26 @@ const PathFinderBoard = () => {
   const height = 30;
 
   const grid = createBoardNodeGrid(width, height);
-  console.log(grid);
 
-  const [currentGrid, setGrid] = useState(grid);
-  const [isVisualized, setIsVisualized] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [visitedNodes, setVisitedNodes] = useState([]);
+  const currentGrid = useRef(grid);
+  const isVisualized = useRef(false);
+  const isAnimating = useRef(false);
+  const visitedNodes = useRef([]);
 
   const visualize = async function () {
-    if (isAnimating) return;
-    if (isVisualized) cleanUpVisitedNodes(visitedNodes);
-    setIsVisualized(true);
-    setIsAnimating(true);
+    if (isAnimating.current) return;
+    if (isVisualized.current) cleanUpVisitedNodes(visitedNodes.current);
+    isVisualized.current = true;
+    isAnimating.current = true;
     const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
     const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
-    const [visitedOrder, takenPath] = bfs(start, end, currentGrid, false);
-    setVisitedNodes(visitedOrder);
+    const [visitedOrder, takenPath] = bfs(
+      start,
+      end,
+      currentGrid.current,
+      false
+    );
+    visitedNodes.current = visitedOrder;
     if (visitedOrder.length === 0) return;
 
     let index = 0;
@@ -57,13 +60,13 @@ const PathFinderBoard = () => {
       const x = visitedOrder[index].x;
       const y = visitedOrder[index].y;
       index++;
-      const nodeState = currentGrid[y][x].nodeState;
+      const nodeState = currentGrid.current[y][x].nodeState;
       if (nodeState !== NodeStates.end && nodeState !== NodeStates.start)
-        currentGrid[y][x].setState(NodeStates.visited);
+        currentGrid.current[y][x].setState(NodeStates.visited);
       if (index === visitedOrder.length) {
         clearInterval(interval);
         await visualizePath(takenPath);
-        setIsAnimating(false);
+        isAnimating.current = false;
       }
     }, 0.5);
   };
@@ -72,9 +75,9 @@ const PathFinderBoard = () => {
     for (let node of visitedNodes) {
       const x = node.x;
       const y = node.y;
-      const nodeState = currentGrid[y][x].nodeState;
+      const nodeState = currentGrid.current[y][x].nodeState;
       if (nodeState === NodeStates.path || nodeState === NodeStates.visited)
-        currentGrid[node.y][node.x].setState(NodeStates.unvisited);
+        currentGrid.current[node.y][node.x].setState(NodeStates.unvisited);
     }
   };
 
@@ -86,9 +89,9 @@ const PathFinderBoard = () => {
         const x = takenPath[index].x;
         const y = takenPath[index].y;
         index++;
-        const nodeState = currentGrid[y][x].nodeState;
+        const nodeState = currentGrid.current[y][x].nodeState;
         if (nodeState !== NodeStates.end && nodeState !== NodeStates.start)
-          currentGrid[y][x].setState(NodeStates.path);
+          currentGrid.current[y][x].setState(NodeStates.path);
         if (index === takenPath.length) {
           clearInterval(pathInterval);
           resolve();
@@ -97,13 +100,10 @@ const PathFinderBoard = () => {
     });
   };
 
-  shouldComponentUpdate(() => {
-    return false;
-  });
   useEffect(() => {
     for (let i = 0; i < height; i++) {
       for (let j = 0; j < width; j++) {
-        const currentNode = currentGrid[i][j];
+        const currentNode = currentGrid.current[i][j];
         currentNode.NodeDOM = document.getElementById(
           `${currentNode.y}_${currentNode.x}`
         );
@@ -118,7 +118,7 @@ const PathFinderBoard = () => {
       </button>
       <table className="board">
         <tbody onContextMenu={(e) => e.preventDefault()}>
-          {currentGrid.map((row) => (
+          {currentGrid.current.map((row) => (
             <tr className="row">
               {row.map((node) => (
                 <td
