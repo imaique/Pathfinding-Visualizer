@@ -1,19 +1,8 @@
 import Queue from '../data_structures/Queue';
-import { getPath, isValid } from './shared';
+import { getPath, isValid, getNeighborIncrements } from './shared';
 
 export const bfs = (start, end, grid, isDiagonalNeighbors) => {
-  let neighbors = [];
-  for (let i = -1; i <= 1; i++) {
-    for (let j = -1; j <= 1; j++) {
-      // if diagonal neighbors are not allowed and the current is diagonal, skip
-      if (!isDiagonalNeighbors && i !== 0 && j !== 0) continue;
-
-      // you can't be your own neighbor
-      if (i === 0 && j === 0) continue;
-
-      neighbors.push({ x: j, y: i });
-    }
-  }
+  const neighbors = getNeighborIncrements(isDiagonalNeighbors);
 
   const queue = new Queue();
   const visitedOrder = [];
