@@ -13,6 +13,12 @@ export const dfs = (start, end, grid, isDiagonalNeighbors) => {
 
   while (!stack.isEmpty()) {
     const current = stack.pop();
+    if (current.x === end.x && current.y === end.y) {
+      let path = getPath(current);
+      return [visitedOrder, path];
+    }
+    visitedOrder.push(current);
+    visited.add(`${current.y}_${current.x}`);
 
     for (let increments of neighbors) {
       const neighbor = {
@@ -20,14 +26,8 @@ export const dfs = (start, end, grid, isDiagonalNeighbors) => {
         y: current.y + increments.y,
       };
       if (isValid(neighbor.x, neighbor.y, grid, visited)) {
-        if (neighbor.x === end.x && neighbor.y === end.y) {
-          let path = getPath(current);
-          return [visitedOrder, path];
-        }
         neighbor.prev = current;
         stack.push(neighbor);
-        visitedOrder.push(neighbor);
-        visited.add(`${neighbor.y}_${neighbor.x}`);
       }
     }
   }

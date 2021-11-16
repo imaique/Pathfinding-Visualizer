@@ -13,6 +13,12 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
 
   while (!queue.isEmpty()) {
     const current = queue.dequeue();
+    if (current.x === end.x && current.y === end.y) {
+      let path = getPath(current);
+      return [visitedOrder, path];
+    }
+
+    visitedOrder.push(current);
 
     for (let increments of neighbors) {
       const neighbor = {
@@ -20,13 +26,8 @@ export const bfs = (start, end, grid, isDiagonalNeighbors) => {
         y: current.y + increments.y,
       };
       if (isValid(neighbor.x, neighbor.y, grid, visited)) {
-        if (neighbor.x === end.x && neighbor.y === end.y) {
-          let path = getPath(current);
-          return [visitedOrder, path];
-        }
         neighbor.prev = current;
         queue.enqueue(neighbor);
-        visitedOrder.push(neighbor);
         visited.add(`${neighbor.y}_${neighbor.x}`);
       }
     }
