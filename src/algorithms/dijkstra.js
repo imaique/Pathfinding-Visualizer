@@ -10,7 +10,7 @@ export const djikstra = (start, end, grid, isDiagonalNeighbors) => {
   queue.push(start, 0);
   visited.set(`${start.y}_${start.x}`, 0);
 
-  while (!(queue.size === 0)) {
+  while (!(queue.length === 0)) {
     const current = queue.pop();
     if (current.x === end.x && current.y === end.y) {
       let path = getPath(current);
