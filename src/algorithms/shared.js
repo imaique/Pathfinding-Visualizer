@@ -24,6 +24,14 @@ export const getNeighborIncrements = (isDiagonalNeighbors) => {
       neighbors.push({ x: j, y: i });
     }
   }
+  if (isDiagonalNeighbors)
+    neighbors.sort((a, b) => {
+      if ((a.x === 0 || a.y === 0) && (b.x === 0 || b.y === 0)) {
+        return 0;
+      }
+      if (a.x === 0 || a.y === 0) return -1;
+      if (b.x === 0 || b.y === 0) return 1;
+    });
   return neighbors;
 };
 
