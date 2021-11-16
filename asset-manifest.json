@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "//imaique.github.io/pathfinding-visualizer/static/css/main.6bf02a05.chunk.css",
+    "main.js": "//imaique.github.io/pathfinding-visualizer/static/js/main.2a4ea44b.chunk.js",
+    "main.js.map": "//imaique.github.io/pathfinding-visualizer/static/js/main.2a4ea44b.chunk.js.map",
+    "runtime-main.js": "//imaique.github.io/pathfinding-visualizer/static/js/runtime-main.68ae9df5.js",
+    "runtime-main.js.map": "//imaique.github.io/pathfinding-visualizer/static/js/runtime-main.68ae9df5.js.map",
+    "static/js/2.1990eb75.chunk.js": "//imaique.github.io/pathfinding-visualizer/static/js/2.1990eb75.chunk.js",
+    "static/js/2.1990eb75.chunk.js.map": "//imaique.github.io/pathfinding-visualizer/static/js/2.1990eb75.chunk.js.map",
+    "index.html": "//imaique.github.io/pathfinding-visualizer/index.html",
+    "static/css/main.6bf02a05.chunk.css.map": "//imaique.github.io/pathfinding-visualizer/static/css/main.6bf02a05.chunk.css.map",
+    "static/js/2.1990eb75.chunk.js.LICENSE.txt": "//imaique.github.io/pathfinding-visualizer/static/js/2.1990eb75.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.68ae9df5.js",
+    "static/js/2.1990eb75.chunk.js",
+    "static/css/main.6bf02a05.chunk.css",
+    "static/js/main.2a4ea44b.chunk.js"
+  ]
+}
