@@ -7,7 +7,7 @@ table.disable {
   pointer-events: none;
 }
 .node:hover {
-  opacity: 75%;
+  opacity: 0.75;
 }
 .node {
   height: 1.5em;
