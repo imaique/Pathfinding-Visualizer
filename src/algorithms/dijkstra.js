@@ -1,4 +1,4 @@
-import { getPath, isValid, getNeighborIncrements } from './shared';
+import { isDiagonal, getPath, isValid, getNeighborIncrements } from './shared';
 import PriorityQueue from '../data_structures/PriorityQueue';
 
 export const djikstra = (start, end, grid, isDiagonalNeighbors) => {
@@ -23,13 +23,12 @@ export const djikstra = (start, end, grid, isDiagonalNeighbors) => {
           return [visitedOrder, path];
         }
         neighbor.prev = current;
-        neighbor.cost = current.cost + grid[neighbor.y][neighbor.x].weight;
         // if diagonal, increase the cost by 1 to prevent weird paths;
-        if (
-          Math.abs(neighbor.x - current.x) + Math.abs(neighbor.y - current.y) >
-          1
-        )
-          neighbor.cost++;
+
+        neighbor.cost =
+          current.cost +
+          grid[neighbor.y][neighbor.x].weight *
+            (isDiagonal(current, neighbor) ? Math.SQRT2 : 1);
 
         queue.push(neighbor, neighbor.cost);
         visitedOrder.push(neighbor);
