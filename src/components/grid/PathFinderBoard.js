@@ -1,8 +1,11 @@
 import './PathFinderBoard.css';
 import React, { useEffect, useState, useRef } from 'react';
+import { dfs } from '../../algorithms/dfs';
 import { bfs } from '../../algorithms/bfs';
 import { NodeStates } from './NodeStates';
 import { BoardNode } from './BoardNode';
+import { djikstra } from '../../algorithms/dijkstra';
+import { astar } from '../../algorithms/astar';
 
 const PathFinderBoard = () => {
   const createBoardNodeGrid = (width, height) => {
@@ -46,11 +49,11 @@ const PathFinderBoard = () => {
     isAnimating.current = true;
     const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
     const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
-    const [visitedOrder, takenPath] = bfs(
+    const [visitedOrder, takenPath] = astar(
       start,
       end,
       currentGrid.current,
-      false
+      true
     );
     visitedNodes.current = visitedOrder;
     if (visitedOrder.length === 0) return;
@@ -83,7 +86,10 @@ const PathFinderBoard = () => {
 
   const visualizePath = function (takenPath) {
     return new Promise((resolve) => {
-      if (takenPath.length === 0) resolve();
+      if (takenPath.length === 0) {
+        resolve();
+        return;
+      }
       let index = 0;
       const pathInterval = setInterval(() => {
         const x = takenPath[index].x;
