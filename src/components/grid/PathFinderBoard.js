@@ -69,11 +69,22 @@ const PathFinderBoard = () => {
       index++;
       if (!isStart(y, x) && !isEnd(y, x)) {
         console.time();
-        setGrid((prevGrid) => {
-          const newGrid = deepCopyBoard(prevGrid);
-          newGrid[y][x].nodeState = NodeStates.visited;
-          return newGrid;
-        });
+        setGrid((prevGrid) =>
+          prevGrid.map((row, xIdx) => {
+            if (x === xIdx) {
+              return row.map((cell, yIdx) => {
+                if (y === yIdx) {
+                  return {
+                    ...cell,
+                    nodestate: NodeStates.visited,
+                  };
+                }
+                return cell;
+              });
+            }
+            return row;
+          })
+        );
         console.timeEnd();
       }
       if (index === visitedOrder.length) {
@@ -115,11 +126,22 @@ const PathFinderBoard = () => {
         const y = takenPath[index].y;
         index++;
         if (!isStart(y, x) && !isEnd(y, x)) {
-          setGrid((prevGrid) => {
-            const newGrid = deepCopyBoard(prevGrid);
-            newGrid[y][x].nodeState = NodeStates.path;
-            return newGrid;
-          });
+          setGrid((prevGrid) =>
+            prevGrid.map((row, xIdx) => {
+              if (x === xIdx) {
+                return row.map((cell, yIdx) => {
+                  if (y === yIdx) {
+                    return {
+                      ...cell,
+                      nodeState: NodeStates.visited,
+                    };
+                  }
+                  return cell;
+                });
+              }
+              return row;
+            })
+          );
         }
         if (index === takenPath.length) {
           clearInterval(pathInterval);
@@ -177,8 +199,8 @@ const PathFinderBoard = () => {
                 <Node
                   key={index2}
                   state={node.nodeState}
-                  onMouseOverNode={() => handleMouseOverNode(node.y, node.x)}
-                  onMouseDownNode={() => handleMouseDownNode(node.y, node.x)}
+                  //onMouseOverNode={() => handleMouseOverNode(node.y, node.x)}
+                  //onMouseDownNode={() => handleMouseDownNode(node.y, node.x)}
                 />
               ))}
             </tr>
