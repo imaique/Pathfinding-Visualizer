@@ -3,6 +3,10 @@ table,
   border-collapse: collapse;
   border: 1px solid black;
 }
+table {
+  margin-top: 10em;
+  margin: auto;
+}
 table.disable {
   pointer-events: none;
 }

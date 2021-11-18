@@ -1,0 +1,20 @@
+.path-select {
+  display: flex;
+  height: 100px;
+}
+.select-title {
+  width: 400px;
+  background-color: aliceblue;
+}
+.path-choices {
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+}
+.algorithm-choice.selected {
+  background-color: blueviolet;
+}
+.algorithm-choice {
+  position: relative;
+  width: 100%;
+}

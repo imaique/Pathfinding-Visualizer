@@ -6,56 +6,60 @@ import { NodeStates } from './NodeStates';
 import { BoardNode } from './BoardNode';
 import { djikstra } from '../../algorithms/dijkstra';
 import { astar } from '../../algorithms/astar';
+import { greedy } from '../../algorithms/greedy';
+import PathfinderAlgorithms from './PathfinderAlgorithms';
+import Node from './Node';
+import createEmptyBoard from '../../utils/createEmptyBoard';
+import deepCopyBoard from '../../utils/deepCopyGrid';
 
 const PathFinderBoard = () => {
-  const createBoardNodeGrid = (width, height) => {
-    let grid = new Array(height);
-    for (let i = 0; i < height; i++) {
-      let row = new Array(width);
-      for (let j = 0; j < width; j++) {
-        row[j] = new BoardNode(j, i);
-      }
-      grid[i] = row;
-    }
+  const [currentGrid, setGrid] = useState([]);
+  const [draggedState, setDraggedState] = useState(null);
+  const [isAnimating, setAnimating] = useState(false);
+  const [isVisualized, setVisualized] = useState(false);
+  const [visitedNodes, setVisitedNodes] = useState([]);
+  //const [pathfindingAlgorithm, setPathfindingAlgorithm] = useState(astar);
+  const [startNode, setStartNode] = useState();
+  const [endNode, setEndNode] = useState();
+  // const isVisualized = useRef(false);
+
+  window.addEventListener('mouseup', () => {
+    setDraggedState(null);
+    // find replacement logic
+    //BoardNode.revertPreviousNode = null;
+  });
+
+  useEffect(() => {
+    freshGrid();
+  }, []);
+
+  function freshGrid() {
+    const width = 60;
+    const height = 30;
+    const newBoard = createEmptyBoard(width, height);
+
     const middleRow = ~~(height / 2);
     const startCol = ~~(width / 4);
     const endCol = width - ~~(width / 4);
-    grid[middleRow][startCol].nodeState = NodeStates.start;
-    grid[middleRow][endCol].nodeState = NodeStates.end;
-    BoardNode.startNode = grid[middleRow][startCol];
-    BoardNode.endNode = grid[middleRow][endCol];
-
-    return grid;
-  };
-
-  window.addEventListener('mouseup', () => {
-    BoardNode.draggedState = null;
-    BoardNode.revertPreviousNode = null;
-  });
-  const width = 60;
-  const height = 30;
-
-  const grid = createBoardNodeGrid(width, height);
-
-  const currentGrid = useRef(grid);
-  const isVisualized = useRef(false);
-  const isAnimating = useRef(false);
-  const visitedNodes = useRef([]);
+    newBoard[middleRow][startCol].nodeState = NodeStates.start;
+    setStartNode({ y: middleRow, x: startCol });
+    newBoard[middleRow][endCol].nodeState = NodeStates.end;
+    setEndNode({ y: middleRow, x: endCol });
+    setGrid(newBoard);
+  }
 
   const visualize = async function () {
-    if (isAnimating.current) return;
-    if (isVisualized.current) cleanUpVisitedNodes(visitedNodes.current);
-    isVisualized.current = true;
-    isAnimating.current = true;
-    const start = { x: BoardNode.startNode.x, y: BoardNode.startNode.y };
-    const end = { x: BoardNode.endNode.x, y: BoardNode.endNode.y };
-    const [visitedOrder, takenPath] = astar(
-      start,
-      end,
-      currentGrid.current,
+    if (isAnimating) return;
+    if (isVisualized) cleanUpVisitedNodes();
+    setVisualized(true);
+    setAnimating(true);
+    const [visitedOrder, takenPath] = bfs(
+      startNode,
+      endNode,
+      currentGrid,
       true
     );
-    visitedNodes.current = visitedOrder;
+    setVisitedNodes(visitedOrder);
     if (visitedOrder.length === 0) return;
 
     let index = 0;
@@ -63,25 +67,40 @@ const PathFinderBoard = () => {
       const x = visitedOrder[index].x;
       const y = visitedOrder[index].y;
       index++;
-      const nodeState = currentGrid.current[y][x].nodeState;
-      if (nodeState !== NodeStates.end && nodeState !== NodeStates.start)
-        currentGrid.current[y][x].setState(NodeStates.visited);
+      if (!isStart(y, x) && !isEnd(y, x)) {
+        console.time();
+        setGrid((prevGrid) => {
+          const newGrid = deepCopyBoard(prevGrid);
+          newGrid[y][x].nodeState = NodeStates.visited;
+          return newGrid;
+        });
+        console.timeEnd();
+      }
       if (index === visitedOrder.length) {
         clearInterval(interval);
         await visualizePath(takenPath);
-        isAnimating.current = false;
+        setAnimating(false);
       }
-    }, 0.5);
+    }, 0.1);
   };
 
-  const cleanUpVisitedNodes = (visitedNodes) => {
-    for (let node of visitedNodes) {
-      const x = node.x;
-      const y = node.y;
-      const nodeState = currentGrid.current[y][x].nodeState;
-      if (nodeState === NodeStates.path || nodeState === NodeStates.visited)
-        currentGrid.current[node.y][node.x].setState(NodeStates.unvisited);
-    }
+  const cleanUpVisitedNodes = () => {
+    setGrid((prevGrid) => {
+      const newBoard = deepCopyBoard(prevGrid);
+      for (let node of visitedNodes) {
+        const x = node.x;
+        const y = node.y;
+        const nodeState = newBoard[y][x].nodeState;
+        if (nodeState === NodeStates.path || nodeState === NodeStates.visited)
+          newBoard[y][x].nodeState = NodeStates.unvisited;
+      }
+    });
+  };
+  const isEnd = (y, x) => {
+    return y === endNode.y && x === endNode.x;
+  };
+  const isStart = (y, x) => {
+    return y === startNode.y && x === startNode.x;
   };
 
   const visualizePath = function (takenPath) {
@@ -95,9 +114,13 @@ const PathFinderBoard = () => {
         const x = takenPath[index].x;
         const y = takenPath[index].y;
         index++;
-        const nodeState = currentGrid.current[y][x].nodeState;
-        if (nodeState !== NodeStates.end && nodeState !== NodeStates.start)
-          currentGrid.current[y][x].setState(NodeStates.path);
+        if (!isStart(y, x) && !isEnd(y, x)) {
+          setGrid((prevGrid) => {
+            const newGrid = deepCopyBoard(prevGrid);
+            newGrid[y][x].nodeState = NodeStates.path;
+            return newGrid;
+          });
+        }
         if (index === takenPath.length) {
           clearInterval(pathInterval);
           resolve();
@@ -105,34 +128,58 @@ const PathFinderBoard = () => {
       }, 20);
     });
   };
+  const handleMouseDownNode = (y, x) => {};
+  const handleMouseOverNode = (y, x) => {
+    if (
+      BoardNode.draggedState === null ||
+      this.nodeState === NodeStates.start ||
+      this.nodeState === NodeStates.end
+    )
+      return;
 
-  useEffect(() => {
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-        const currentNode = currentGrid.current[i][j];
-        currentNode.NodeDOM = document.getElementById(
-          `${currentNode.y}_${currentNode.x}`
-        );
-      }
+    if (
+      BoardNode.draggedState === NodeStates.unvisited &&
+      (this.nodeState === NodeStates.path ||
+        this.nodeState === NodeStates.visited)
+    )
+      return;
+
+    if (
+      BoardNode.draggedState !== NodeStates.wall &&
+      BoardNode.revertPreviousNode !== null
+    ) {
+      BoardNode.revertPreviousNode();
+      this.setThisAsPrevious();
     }
-  });
+    this.setState(BoardNode.draggedState);
+    if (BoardNode.draggedState === NodeStates.wall) {
+      BoardNode.walls.add(this.getKey());
+    } else if (BoardNode.draggedState === NodeStates.unvisited) {
+      BoardNode.walls.delete(this.getKey());
+    } else if (BoardNode.draggedState === NodeStates.start) {
+      BoardNode.startNode = this;
+    } else if (BoardNode.draggedState === NodeStates.end) {
+      BoardNode.endNode = this;
+    }
+  };
 
   return (
     <React.Fragment>
+      <PathfinderAlgorithms />
       <button type="button" onClick={visualize} title="Visualize">
         Visualize!
       </button>
       <table className="board">
         <tbody onContextMenu={(e) => e.preventDefault()}>
-          {currentGrid.current.map((row) => (
-            <tr className="row">
-              {row.map((node) => (
-                <td
-                  className={'node ' + node.nodeState}
-                  id={`${node.y}_${node.x}`}
-                  onMouseDown={node.click}
-                  onMouseOver={node.mouseOver}
-                ></td>
+          {currentGrid.map((row, index1) => (
+            <tr className="row" key={index1}>
+              {row.map((node, index2) => (
+                <Node
+                  key={index2}
+                  state={node.nodeState}
+                  onMouseOverNode={() => handleMouseOverNode(node.y, node.x)}
+                  onMouseDownNode={() => handleMouseDownNode(node.y, node.x)}
+                />
               ))}
             </tr>
           ))}
