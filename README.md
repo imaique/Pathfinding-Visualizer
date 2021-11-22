@@ -1,7 +1,5 @@
-# Pathfinding Visualizer
+# Pathfinding Visualizer (Not Maintained)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and was heavily inspired by [Clement Mihailescu's Pathfinding Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer).
+The repository of the working version of the Pathfinding Visualizer can be viewed [here](https://github.com/imaique/pathfinding-visualizer-2).
 
-## Available Algorithms
-
-**Breadth-First Search (BFS)**
+This project is a failed attempt at creating a Pathfinding Visualizer using React. It made me learn a lot more about React and also made me realize that it was a bit overkill for this relatively simple project.
